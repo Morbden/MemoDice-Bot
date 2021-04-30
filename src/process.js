@@ -73,7 +73,8 @@ const rollingCommand = (cmd, chance) => {
   })
   const sum = cmdWithValues
     .match(/((\+|\-)?\d+)/g)
-    .reduce((p, v) => (p || 0) + parseInt(v))
+    .map((e) => parseInt(e))
+    .reduce((p, v) => (p || 0) + v)
   const cmdToPrint = cmd
     .replace(/(\d+d\d+)/g, (v) => {
       const dice = dices.find((d) => d.name === v)
