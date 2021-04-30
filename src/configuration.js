@@ -97,7 +97,7 @@ export const getRootDataProps = async (message) => {
  * @param {import('discord.js').Message} message
  */
 export const configureChannelData = async (message) => {
-  await message.channel.send('Start configuration...')
+  await message.reply('Start configuration...')
 
   const guild = message.guild
   const clientUser = guild.me
@@ -130,12 +130,12 @@ export const configureChannelData = async (message) => {
     },
   ])
 
-  await message.channel.send('Configuring Data Channel...')
+  await message.reply('Configuring Data Channel...')
   const rootData = await tryGetMainPropertiesMessage(dataChannel)
 
   const props = properties.parseToObject((rootData && rootData.content) || '')
   props[DATA_FIELD_CHANNEL_RECEIVER_ID] = message.channel.id
   props[DATA_FIELD_CHANNEL_MAIN_PROPERTIES_ID] = dataChannel.id
   await setMainPropertiesMessage(props, dataChannel)
-  await message.channel.send('All right now! 👌')
+  await message.reply('All right now! 👌')
 }

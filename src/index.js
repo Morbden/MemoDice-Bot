@@ -27,7 +27,7 @@ client.on('message', (message) => {
   if (VL_COMMAND_INITIALIZE_SERVER.test(message.content)) {
     return configureChannelData(message).catch((err) => {
       console.log(err.message || err)
-      message.channel.send(
+      message.reply(
         typeof err === 'string' ? err : 'Something unexpected error happens!',
       )
     })
@@ -44,7 +44,7 @@ client.on('message', (message) => {
     })
     .catch((err) => {
       console.log(err.message || err)
-      message.channel.send(
+      message.reply(
         typeof err === 'string' ? err : 'Something unexpected error happens!',
       )
     })
