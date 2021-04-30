@@ -38,7 +38,7 @@ client.on('message', (message) => {
       const receiverId = props.getValue(DATA_FIELD_CHANNEL_RECEIVER_ID)
       if (receiverId !== message.channel.id) return
 
-      return processCommand(message)
+      return processCommand(message, props)
     })
     .catch((err) => {
       console.log(err.message || err)
