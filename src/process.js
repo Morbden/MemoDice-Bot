@@ -181,7 +181,7 @@ const getCommand = async (message) => {
     message.reply(
       `Here is this master! Your rolling 🎉\n\n` +
         (comment ? comment + '\n' : '') +
-        (varId + ': ' + value),
+        (`**${varId}:** ` + (value.value || value)),
     )
   } else {
     message.reply(MESSAGE_VAR_NOTFOUND)
