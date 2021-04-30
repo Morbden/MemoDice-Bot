@@ -16,7 +16,7 @@ export default class PropertiesParser {
 
   loadData() {
     if (!this.message) return
-    const lines = this.message.content.split(/(\r?\n\r?)+/g)
+    const lines = this.message.content.replace(/\r*/g, '').split(/\n+/g)
     this.header = lines.shift()
     this.data = {}
 
@@ -28,11 +28,14 @@ export default class PropertiesParser {
         return
       }
 
-      const entry = line.split(/\s?=\s?/g)
-      if (entry.length === 2) {
-        this.data[entry[0].trim()] = {
+      const entry = line.split(/=/)
+      if (entry.length >= 2) {
+        const key = entry.shift().trim()
+        const text = entry.join('=').trim()
+
+        this.data[key] = {
           comment: lastComments,
-          value: JSON.parse(entry[1].trim()),
+          value: JSON.parse(text),
         }
         lastComments = ''
       }

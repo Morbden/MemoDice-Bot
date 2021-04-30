@@ -24,7 +24,7 @@ const replyRollingValue = (
   message,
   { value, large = false, critical = false, fail = false },
 ) => {
-  let text = rolling.value
+  let text = value
   switch (true) {
     case critical:
       text += MESSAGE_CRITICAL_ROLLING
@@ -120,8 +120,8 @@ const rollingCommands = async (message) => {
     if (Array.isArray(cmd) && cmd.length === 2) {
       if (!VL_COMMAND_ROLLING.test(cmd[1])) return
       const rolling = rollingCommand(cmd[1], chance)
-      vars.setValue(cmd[0], rolling)
       rolling.value = `**${cmd[0]}:** ` + rolling.value
+      vars.setValue(cmd[0], rolling)
       replyValue(rolling)
     }
     if (typeof cmd === 'string') {
@@ -145,12 +145,17 @@ const listCommand = async (message) => {
   const vars = new PropertiesParser(dataMessage)
   vars.loadData()
 
+  const varsList = Object.entries(vars.data)
+  if (!varsList.length) {
+    return message.reply(MESSAGE_USER_NOT_MEMO)
+  }
+
   message.reply(
     `Here is this master, your rollings 🎉\n\n` +
-      Object.entries(vars.data)
+      varsList
         .map(([key, d]) => {
           const comment = d.comment
-          const value = d.value
+          const value = d.value.value || d.value
 
           return (comment ? comment + '\n' : '') + (`**${key}:** ` + value)
         })
