@@ -1,0 +1,27 @@
+{
+  "name": "memodice-bot",
+  "version": "0.0.1",
+  "description": "Discord Bot for rolling dices. Can persist results in variables, linked to id users",
+  "main": "src/index.js",
+  "type": "module",
+  "author": {
+    "name": "Morbden",
+    "email": "morbden.dev@gmail.com"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "^16.x"
+  },
+  "scripts": {
+    "start": "node -r dotenv/config src",
+    "dev": "nodemon --exec \"npm start\" --watch src"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "discord.js": "^12.5.3"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.7"
+  }
+}

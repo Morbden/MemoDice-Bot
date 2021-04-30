@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "rootDir": "."
+  },
+  "exclude": ["node_modules"],
+  "include": ["src/**/*.js", "src/**/*.mjs"]
+}
