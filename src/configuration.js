@@ -93,6 +93,7 @@ export const getRootDataProps = async (message) => {
   const rootMessage = await tryGetMainPropertiesMessage(dataChannel)
 
   const props = new PropertiesParser(rootMessage)
+  props.loadData()
   return props
 }
 
@@ -106,9 +107,10 @@ export const tryUserDataMessage = async (message, userId) => {
   if (!dataChannel) return Promise.reject(MESSAGE_NOT_CONFIGURED_YET)
   const msgList = await dataChannel.messages.fetch()
   /** @type {import('discord.js').Message} */
-  const rootData = msgList.find((msg) =>
-    VL_DATA_USER_PROPERTIES(userId).test(msg.content),
-  )
+  const rootData = msgList.find((msg) => {
+    const validation = VL_DATA_USER_PROPERTIES(userId)
+    return validation.test(msg.content)
+  })
   return rootData
 }
 
@@ -166,6 +168,7 @@ export const configureChannelData = async (message) => {
   const rootData = await tryGetMainPropertiesMessage(dataChannel)
 
   const props = new PropertiesParser(rootData)
+  props.loadData()
   props.setHeader(DATA_HEADER_MAIN_PROPERTIES)
   props.setComment(
     DATA_FIELD_CHANNEL_RECEIVER_ID,

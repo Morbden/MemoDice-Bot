@@ -28,7 +28,7 @@ client.on('message', (message) => {
 
   if (VL_COMMAND_INITIALIZE_SERVER.test(message.content)) {
     return configureChannelData(message).catch((err) => {
-      console.log(err.message || err)
+      console.log(err)
       message.reply(typeof err === 'string' ? err : MESSAGE_UNEXPECTED_ERROR)
     })
   }
@@ -41,7 +41,7 @@ client.on('message', (message) => {
       return processCommand(message, props)
     })
     .catch((err) => {
-      console.log(err.message || err)
+      console.log(err)
       message.reply(typeof err === 'string' ? err : MESSAGE_UNEXPECTED_ERROR)
     })
 })

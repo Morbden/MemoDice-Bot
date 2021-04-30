@@ -16,7 +16,7 @@ export default class PropertiesParser {
 
   loadData() {
     if (!this.message) return
-    const lines = this.message.content.split(/\s+/g)
+    const lines = this.message.content.split(/(\r?\n\r?)+/g)
     this.header = lines.shift()
     this.data = {}
 
@@ -48,6 +48,7 @@ export default class PropertiesParser {
   toString() {
     const lines = [this.header]
     for (let key in this.data) {
+      if (!this.data[key]) continue
       lines.push(this.data[key].comment)
       lines.push(key + '=' + JSON.stringify(this.data[key].value))
     }
@@ -67,12 +68,15 @@ export default class PropertiesParser {
 
   getComment(key, fallback = null) {
     return (
-      (this.data[key].comment && this.data[key].comment.slice(1)) || fallback
+      (this.data[key] &&
+        this.data[key].comment &&
+        this.data[key].comment.slice(1)) ||
+      fallback
     )
   }
 
   getValue(key, fallback = null) {
-    return this.data[key].value || fallback
+    return (this.data[key] && this.data[key].value) || fallback
   }
 
   setHeader(text) {
