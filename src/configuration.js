@@ -12,9 +12,13 @@ import { VL_DATA_MAIN_PROPERTIES } from './validate-data.js'
  * @param {import('discord.js').Guild} guild
  */
 const createChannelData = async (guild) => {
-  return guild.channels.create(DATA_CHANNEL_NAME, {
+  const channel = await guild.channels.create(DATA_CHANNEL_NAME, {
     type: 'text',
   })
+
+  channel.send(`Master, never use that channel.\nIt can disrupt my memory. 😵`)
+
+  return channel
 }
 
 /**
@@ -97,7 +101,9 @@ export const getRootDataProps = async (message) => {
  * @param {import('discord.js').Message} message
  */
 export const configureChannelData = async (message) => {
-  await message.reply('Start configuration...')
+  await message.reply(
+    `I\'m feeling welcome here 😊!\nI'll start with the basic configuration...`,
+  )
 
   const guild = message.guild
   const clientUser = guild.me
@@ -130,12 +136,14 @@ export const configureChannelData = async (message) => {
     },
   ])
 
-  await message.reply('Configuring Data Channel...')
+  await message.reply(`I'm creating a channel to organize my memory 📝🤯.`)
   const rootData = await tryGetMainPropertiesMessage(dataChannel)
 
   const props = properties.parseToObject((rootData && rootData.content) || '')
   props[DATA_FIELD_CHANNEL_RECEIVER_ID] = message.channel.id
   props[DATA_FIELD_CHANNEL_MAIN_PROPERTIES_ID] = dataChannel.id
   await setMainPropertiesMessage(props, dataChannel)
-  await message.reply('All right now! 👌')
+  await message.reply(
+    `All right now! 👌\nI will listen to your orders from that channel. 💂‍♂️`,
+  )
 }
