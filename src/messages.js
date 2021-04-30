@@ -6,7 +6,7 @@ export const MESSAGE_UNEXPECTED_ERROR = `Something unexpected error happens! �
 export const MESSAGE_PROTECT_MEMORY = `Master, never use that channel.\nIt can disrupt my memory. 😵`
 export const MESSAGE_USER_NOT_MEMO = `I'm sorry, but you have not yet stored a rolling. ⌛🎲\nTry send to me this '$md --attack=1d20'`
 export const MESSAGE_MANY_ROLLINGS = `Thank God 😅!\nThere were a lot of dices but I finished!`
-export const MESSAGE_CRITICAL_ROLLING = `Wow! How lucky you are! Beautiful Critic!🍀👏`
-export const MESSAGE_FAIL_ROLLING = `💣 You were unlucky in that! Maybe it will improve next time.`
-export const MESSAGE_LARGE_ROLLING = `My God! How much more dice will I have to roll. 😅`
 export const MESSAGE_VAR_NOTFOUND = `I\'m sorry master 😥. I didn\'t find that scroll.`
+export const MESSAGE_CRITICAL_ROLLING = ` - Wow! How lucky you are! Beautiful Critic!🍀👏`
+export const MESSAGE_FAIL_ROLLING = ` - 💣 You were unlucky in that! Maybe it will improve next time.`
+export const MESSAGE_LARGE_ROLLING = ` - My God! How much more dice will I have to roll. 😅`
