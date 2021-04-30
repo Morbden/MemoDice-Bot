@@ -120,8 +120,8 @@ const rollingCommands = async (message) => {
     if (Array.isArray(cmd) && cmd.length === 2) {
       if (!VL_COMMAND_ROLLING.test(cmd[1])) return
       const rolling = rollingCommand(cmd[1], chance)
+      vars.setValue(cmd[0], JSON.parse(JSON.stringify(rolling)))
       rolling.value = `**${cmd[0]}:** ` + rolling.value
-      vars.setValue(cmd[0], rolling)
       replyValue(rolling)
     }
     if (typeof cmd === 'string') {
