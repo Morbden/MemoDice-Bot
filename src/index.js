@@ -1,14 +1,20 @@
 import 'colors'
 import { Client } from 'discord.js'
+import Express from 'express'
+import cors from 'cors'
+
 import { configureChannelData, getRootDataProps } from './configuration.js'
 import { DATA_FIELD_CHANNEL_RECEIVER_ID } from './constants.js'
 import { processCommand } from './process.js'
 import { VL_COMMAND_INITIALIZE_SERVER } from './validate-command.js'
 
 const BOT_TOKEN = process.env.BOT_TOKEN
+const PORT = parseInt(process.env.PORT) || 3001
 
 const client = new Client()
+const app = Express()
 
+// START DISCORD BOT CLIENT CONFIGURE
 client.on('ready', () => {
   console.log('Start bot... 🤖')
   client.user.setStatus('online')
@@ -43,5 +49,18 @@ client.on('message', (message) => {
       )
     })
 })
+// END DISCORD BOT CLIENT CONFIGURE
+// START EXPRESS CONFIGURE
+
+app.use(cors())
+app.use(Express.json())
+app.use(Express.urlencoded({ extended: false }))
+
+app.get('/', (req, res) => {
+  res.end('MemoDice Discord Bot')
+})
+
+// END EXPRESS CONFIGURE
 
 client.login(BOT_TOKEN)
+app.listen(PORT)

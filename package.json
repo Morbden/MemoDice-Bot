@@ -18,7 +18,9 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
+    "cors": "^2.8.5",
     "discord.js": "^12.5.3",
+    "express": "^4.17.1",
     "minimist": "^1.2.5"
   },
   "devDependencies": {
