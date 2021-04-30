@@ -53,6 +53,9 @@ app.use(cors())
 app.use(Express.json())
 app.use(Express.urlencoded({ extended: false }))
 
+app.get('/connect', (_, res) => {
+  res.redirect(process.env.URL_INV)
+})
 app.get('/', (_, res) => {
   res.end('MemoDice Discord Bot')
 })
