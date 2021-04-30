@@ -22,7 +22,7 @@ client.on('ready', () => {
 
 client.on('message', (message) => {
   if (message.author.bot) return
-  if (message.type !== 'DEFAULT' || !message.content.startsWith('-md ')) return
+  if (message.type !== 'DEFAULT' || !message.content.startsWith('$md ')) return
 
   if (VL_COMMAND_INITIALIZE_SERVER.test(message.content)) {
     return configureChannelData(message).catch((err) => {
