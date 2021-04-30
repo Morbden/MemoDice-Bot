@@ -1,14 +1,15 @@
-import minimist from 'minimist'
 import Chance from 'chance'
-import PropertiesParser from './properties-parser.js'
-import { tryUserDataMessage, createUserDataMessage } from './configuration.js'
+import minimist from 'minimist'
+import { createUserDataMessage, tryUserDataMessage } from './configuration.js'
 import {
-  MESSAGE_USER_NOT_MEMO,
-  MESSAGE_MANY_ROLLINGS,
   MESSAGE_CRITICAL_ROLLING,
   MESSAGE_FAIL_ROLLING,
   MESSAGE_LARGE_ROLLING,
+  MESSAGE_MANY_ROLLINGS,
+  MESSAGE_USER_NOT_MEMO,
+  MESSAGE_VAR_NOTFOUND,
 } from './messages.js'
+import PropertiesParser from './properties-parser.js'
 import {
   VL_COMMAND_GET_VAR,
   VL_COMMAND_LIST_VARS,
@@ -173,7 +174,7 @@ const getCommand = async (message) => {
   const vars = new PropertiesParser(dataMessage)
   vars.loadData()
 
-  const varId = message.content.split('s+')[2]
+  const varId = message.content.split(/\s+/)[2]
   const comment = vars.getComment(varId)
   const value = vars.getValue(varId)
   if (value) {
@@ -183,7 +184,7 @@ const getCommand = async (message) => {
         (varId + ': ' + value),
     )
   } else {
-    message.reply(`I\'m sorry master 😥. I didn\'t find that scroll.`)
+    message.reply(MESSAGE_VAR_NOTFOUND)
   }
 }
 
