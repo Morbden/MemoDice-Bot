@@ -1,5 +1,5 @@
 import minimist from 'minimist'
-import PropertiesParser from './properties-parser'
+import PropertiesParser from './properties-parser.js'
 
 /**
  *
