@@ -1,35 +1,81 @@
-const parseValue = (val) => {
-  if (val === 'true') return true
-  if (val === 'false') return false
+export default class PropertiesParser {
+  /** @type {import('discord.js').Message} */
+  message = null
+  /** @type {{[key: string]: {value: any, comment: string}}} */
+  data = {}
+  /** @type {string} */
+  header = null
 
-  const number = parseFloat(val) || parseInt(val)
-  if (isNaN(number) || Math.abs(number) > Number.MAX_SAFE_INTEGER) return val
+  /**
+   *
+   * @param {import('discord.js').Message} message
+   */
+  constructor(message) {
+    this.message = message
+  }
 
-  return number
-}
+  loadData() {
+    if (!this.message) return
+    const lines = this.message.content.split(/\s+/g)
+    this.header = lines.shift()
+    this.data = {}
 
-export default {
-  parseToObject(text) {
-    const lines = text.split(/\s+/g)
-    const data = {}
-
+    let lastComments = ''
     lines.forEach((line) => {
-      if (line[0] === '#') return
+      if (line[0] === '#') {
+        if (!lastComments) lastComments = line
+        else lastComments += '\n' + line
+        return
+      }
+
       const entry = line.split(/\s?=\s?/g)
       if (entry.length === 2) {
-        data[entry[0].trim()] = parseValue(entry[1].trim())
+        this.data[entry[0].trim()] = {
+          comment: lastComments,
+          value: JSON.parse(entry[1].trim()),
+        }
+        lastComments = ''
       }
     })
+  }
 
-    return data
-  },
-  parseToString(object) {
-    const obj = JSON.parse(JSON.stringify(object))
-    const lines = []
-    for (let key in obj) {
-      lines.push(key + '=' + obj[key].toString())
+  async storeData() {
+    if (!this.message) return
+    const content = this.toString()
+    return this.message.edit(content)
+  }
+
+  toString() {
+    const lines = [this.header]
+    for (let key in this.data) {
+      lines.push(this.data[key].comment)
+      lines.push(key + '=' + JSON.stringify(this.data[key].value))
     }
 
     return lines.join('\n')
-  },
+  }
+
+  setComment(key, comment) {
+    if (this.data[key]) this.data[key].comment = '#' + comment
+    else this.data[key] = { comment, value: null }
+  }
+
+  setValue(key, value) {
+    if (this.data[key]) this.data[key].value = value
+    else this.data[key] = { comment: '', value }
+  }
+
+  getComment(key, fallback = null) {
+    return (
+      (this.data[key].comment && this.data[key].comment.slice(1)) || fallback
+    )
+  }
+
+  getValue(key, fallback = null) {
+    return this.data[key].value || fallback
+  }
+
+  setHeader(text) {
+    this.header = text
+  }
 }

@@ -4,7 +4,14 @@ import {
   DATA_FIELD_CHANNEL_RECEIVER_ID,
   DATA_HEADER_MAIN_PROPERTIES,
 } from './constants.js'
-import properties from './properties-parser.js'
+import {
+  MESSAGE_CREATE_MEMORY_CHANNEL,
+  MESSAGE_END_CONFIGURE,
+  MESSAGE_NOT_CONFIGURED_YET,
+  MESSAGE_PROTECT_MEMORY,
+  MESSAGE_START_CONFIGURE,
+} from './messages.js'
+import PropertiesParser from './properties-parser.js'
 import { VL_DATA_MAIN_PROPERTIES } from './validate-data.js'
 
 /**
@@ -16,7 +23,7 @@ const createChannelData = async (guild) => {
     type: 'text',
   })
 
-  channel.send(`Master, never use that channel.\nIt can disrupt my memory. 😵`)
+  channel.send(MESSAGE_PROTECT_MEMORY)
 
   return channel
 }
@@ -53,32 +60,24 @@ const tryGetMainPropertiesMessage = async (channel) => {
 
 /**
  *
+ * @param {PropertiesParser} props
  * @param {import('discord.js').Channel} channel
  */
 const setMainPropertiesMessage = async (props, channel) => {
-  if (!channel) return Promise.reject('The MemoDice is not configured!')
-  const message = await tryGetMainPropertiesMessage(channel)
-  const textProps =
-    DATA_HEADER_MAIN_PROPERTIES + properties.parseToString(props)
-  if (message) {
+  if (!channel) return Promise.reject(MESSAGE_NOT_CONFIGURED_YET)
+  if (props.message) {
     try {
-      await message.edit(textProps)
+      await props.storeData()
     } catch (err) {
       await message.delete()
       await channel.send(textProps)
+      const textProps = props.toString()
+      await channel.send(textProps)
     }
   } else {
+    const textProps = props.toString()
     await channel.send(textProps)
   }
-}
-
-/**
- *
- * @param {import('discord.js').Message} message
- */
-export const setRootDataProps = async (props, message) => {
-  const dataChannel = await tryGetDataChannel(message)
-  await setMainPropertiesMessage(props, dataChannel)
 }
 
 /**
@@ -89,10 +88,7 @@ export const getRootDataProps = async (message) => {
   const dataChannel = await tryGetDataChannel(message)
   const rootMessage = await tryGetMainPropertiesMessage(dataChannel)
 
-  const props = properties.parseToObject(
-    (rootMessage && rootMessage.content) || '',
-  )
-
+  const props = new PropertiesParser(rootMessage)
   return props
 }
 
@@ -101,9 +97,7 @@ export const getRootDataProps = async (message) => {
  * @param {import('discord.js').Message} message
  */
 export const configureChannelData = async (message) => {
-  await message.reply(
-    `I\'m feeling welcome here 😊!\nI'll start with the basic configuration...`,
-  )
+  await message.reply(MESSAGE_START_CONFIGURE)
 
   const guild = message.guild
   const clientUser = guild.me
@@ -136,14 +130,17 @@ export const configureChannelData = async (message) => {
     },
   ])
 
-  await message.reply(`I'm creating a channel to organize my memory 📝🤯.`)
+  await message.reply(MESSAGE_CREATE_MEMORY_CHANNEL)
   const rootData = await tryGetMainPropertiesMessage(dataChannel)
 
-  const props = properties.parseToObject((rootData && rootData.content) || '')
-  props[DATA_FIELD_CHANNEL_RECEIVER_ID] = message.channel.id
-  props[DATA_FIELD_CHANNEL_MAIN_PROPERTIES_ID] = dataChannel.id
-  await setMainPropertiesMessage(props, dataChannel)
-  await message.reply(
-    `All right now! 👌\nI will listen to your orders from that channel. 💂‍♂️`,
+  const props = new PropertiesParser(rootData)
+  props.setHeader(DATA_HEADER_MAIN_PROPERTIES)
+  props.setComment(
+    DATA_FIELD_CHANNEL_RECEIVER_ID,
+    `Receiver commands channel id (last channel name: '${message.channel.name}')`,
   )
+  props.setValue(DATA_FIELD_CHANNEL_RECEIVER_ID, message.channel.id)
+  props.setValue(DATA_FIELD_CHANNEL_MAIN_PROPERTIES_ID, dataChannel.id)
+  await setMainPropertiesMessage(props, dataChannel)
+  await message.reply(MESSAGE_END_CONFIGURE)
 }
