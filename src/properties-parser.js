@@ -57,7 +57,7 @@ export default class PropertiesParser {
 
   setComment(key, comment) {
     if (this.data[key]) this.data[key].comment = '#' + comment
-    else this.data[key] = { comment, value: null }
+    else this.data[key] = { comment: '#' + comment, value: null }
   }
 
   setValue(key, value) {
