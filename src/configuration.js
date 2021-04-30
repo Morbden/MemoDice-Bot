@@ -1,5 +1,6 @@
 import {
   DATA_CHANNEL_NAME,
+  DATA_FIELD_CHANNEL_MAIN_PROPERTIES_ID,
   DATA_FIELD_CHANNEL_RECEIVER_ID,
   DATA_HEADER_MAIN_PROPERTIES,
 } from './constants.js'
@@ -39,11 +40,9 @@ const tryGetMainPropertiesMessage = async (channel) => {
   if (!channel) return null
   const msgList = await channel.messages.fetch()
   /** @type {import('discord.js').Message} */
-  const rootData = msgList.find((msg) => {
-    const t = VL_DATA_MAIN_PROPERTIES.test(msg.content)
-    console.log(msg.content)
-    return t
-  })
+  const rootData = msgList.find((msg) =>
+    VL_DATA_MAIN_PROPERTIES.test(msg.content),
+  )
 
   return rootData
 }
@@ -54,7 +53,7 @@ const tryGetMainPropertiesMessage = async (channel) => {
  */
 const setMainPropertiesMessage = async (props, channel) => {
   if (!channel) return Promise.reject('The MemoDice is not configured!')
-  const message = tryGetMainPropertiesMessage(channel)
+  const message = await tryGetMainPropertiesMessage(channel)
   const textProps =
     DATA_HEADER_MAIN_PROPERTIES + properties.parseToString(props)
   if (message) {
@@ -74,7 +73,7 @@ const setMainPropertiesMessage = async (props, channel) => {
  * @param {import('discord.js').Message} message
  */
 export const setRootDataProps = async (props, message) => {
-  const dataChannel = tryGetDataChannel(message)
+  const dataChannel = await tryGetDataChannel(message)
   await setMainPropertiesMessage(props, dataChannel)
 }
 
@@ -83,8 +82,8 @@ export const setRootDataProps = async (props, message) => {
  * @param {import('discord.js').Message} message
  */
 export const getRootDataProps = async (message) => {
-  const dataChannel = tryGetDataChannel(message)
-  const rootMessage = tryGetMainPropertiesMessage(dataChannel)
+  const dataChannel = await tryGetDataChannel(message)
+  const rootMessage = await tryGetMainPropertiesMessage(dataChannel)
 
   const props = properties.parseToObject(
     (rootMessage && rootMessage.content) || '',
@@ -105,7 +104,7 @@ export const configureChannelData = async (message) => {
   const everyoneRole = guild.roles.everyone
 
   /** @type {import('discord.js').TextChannel} */
-  let dataChannel = tryGetDataChannel(message)
+  let dataChannel = await tryGetDataChannel(message)
   if (!dataChannel) {
     dataChannel = await createChannelData(guild)
   }
@@ -132,10 +131,11 @@ export const configureChannelData = async (message) => {
   ])
 
   await message.channel.send('Configuring Data Channel...')
-  const rootData = tryGetMainPropertiesMessage(dataChannel)
+  const rootData = await tryGetMainPropertiesMessage(dataChannel)
 
   const props = properties.parseToObject((rootData && rootData.content) || '')
   props[DATA_FIELD_CHANNEL_RECEIVER_ID] = message.channel.id
+  props[DATA_FIELD_CHANNEL_MAIN_PROPERTIES_ID] = dataChannel.id
   await setMainPropertiesMessage(props, dataChannel)
   await message.channel.send('All right now! 👌')
 }

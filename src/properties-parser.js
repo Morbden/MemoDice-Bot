@@ -1,7 +1,11 @@
 const parseValue = (val) => {
   if (val === 'true') return true
   if (val === 'false') return false
-  return parseFloat(val) || parseInt(val) || val
+
+  const number = parseFloat(val) || parseInt(val)
+  if (isNaN(number) || Math.abs(number) > Number.MAX_SAFE_INTEGER) return val
+
+  return number
 }
 
 export default {
