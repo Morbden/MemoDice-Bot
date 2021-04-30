@@ -3,6 +3,7 @@ import {
   DATA_FIELD_CHANNEL_MAIN_PROPERTIES_ID,
   DATA_FIELD_CHANNEL_RECEIVER_ID,
   DATA_HEADER_MAIN_PROPERTIES,
+  DATA_USER_PROPERTIES,
 } from './constants.js'
 import {
   MESSAGE_CREATE_MEMORY_CHANNEL,
@@ -12,7 +13,10 @@ import {
   MESSAGE_START_CONFIGURE,
 } from './messages.js'
 import PropertiesParser from './properties-parser.js'
-import { VL_DATA_MAIN_PROPERTIES } from './validate-data.js'
+import {
+  VL_DATA_MAIN_PROPERTIES,
+  VL_DATA_USER_PROPERTIES,
+} from './validate-data.js'
 
 /**
  *
@@ -90,6 +94,34 @@ export const getRootDataProps = async (message) => {
 
   const props = new PropertiesParser(rootMessage)
   return props
+}
+
+/**
+ *
+ * @param {import('discord.js').Message} message
+ * @param {string} userId
+ */
+export const tryUserDataMessage = async (message, userId) => {
+  const dataChannel = await tryGetDataChannel(message)
+  if (!dataChannel) return Promise.reject(MESSAGE_NOT_CONFIGURED_YET)
+  const msgList = await dataChannel.messages.fetch()
+  /** @type {import('discord.js').Message} */
+  const rootData = msgList.find((msg) =>
+    VL_DATA_USER_PROPERTIES(userId).test(msg.content),
+  )
+  return rootData
+}
+
+/**
+ *
+ * @param {import('discord.js').Message} message
+ * @param {string} userId
+ */
+export const createUserDataMessage = async (message, userId) => {
+  const dataChannel = await tryGetDataChannel(message)
+  if (!dataChannel) return Promise.reject(MESSAGE_NOT_CONFIGURED_YET)
+  const header = DATA_USER_PROPERTIES(userId)
+  return dataChannel.send(header)
 }
 
 /**
